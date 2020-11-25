@@ -1,0 +1,27 @@
+  
+  provisioners with nvm and node install
+  
+  "provisioners": [{
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [
+      "apt-get update",
+      "apt-get upgrade -y",
+      "apt-get -y install nginx",
+      "apt-get install git",
+      "apt-get update",
+      "curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.1/install.sh | bash",
+      "source ~/.profile",
+      "nvm --version",
+      "nvm install 10",
+
+      "mkdir myapp",
+      "cd myapp",
+      "npm init",
+      "npm install express --save",
+      "node index.js",
+
+      "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  }]
