@@ -30,3 +30,23 @@ steps:
       **/*jar-with-dependencies.jar
     TargetFolder: '$(System.DefaultWorkingDirectory)/pipeline-artifacts/'
     flattenFolders: true
+
+- task: AzureImageBuilderTask@1
+  displayName: 'Azure VM Image Builder Task'
+  inputs:
+    managedIdentity: '/subscriptions/cb6b44d6-8068-4217-ac69-115f082f21ca/resourcegroups/myVMSSResourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/myVMSSIdentity'
+    imageSource: 'marketplace'
+    packagePath: '$(System.DefaultWorkingDirectory)/pipeline-artifacts'
+    inlineScript: |
+      sudo mkdir /lib/buildArtifacts
+      sudo cp  "/tmp/pipeline-artifacts.tar.gz" /lib/buildArtifacts/.
+      cd /lib/buildArtifacts/.
+      sudo tar -zxvf pipeline-artifacts.tar.gz
+      sudo sh install.sh
+    storageAccountName: 'alexvmssstorageaccount'
+    distributeType: 'sig'
+    galleryImageId: '/subscriptions/cb6b44d6-8068-4217-ac69-115f082f21ca/resourceGroups/myVMSSResourceGroup/providers/Microsoft.Compute/galleries/myVMSSGallery/images/MyImage/versions/0.0.$(Build.BuildId)'
+    replicationRegions: 'eastus2'
+    ibSubscription: 'cb6b44d6-8068-4217-ac69-115f082f21ca'
+    ibAzureResourceGroup: 'myVMSSResourceGroup'
+    ibLocation: 'eastus2'
